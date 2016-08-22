@@ -9,11 +9,13 @@ var TabContentSection = require('./TabContentSection');
 
 
 var TabContentEntry = React.createClass({
+  
+
   render: function(props){
     return (
       <div id={this.props.id}>
         <h1>{this.props.header}</h1>
-        <form action="/" method="post">
+        <form action="http://localhost:4000/users" method="post">
             {this.props.sections.map(function(section, index){
               return <TabContentSection key={index} section={section} />
             })}
