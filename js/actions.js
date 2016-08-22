@@ -138,6 +138,74 @@ var fetchIngredientDesc = function(ingredient) {
 
 //---------end Ingredient Actions
 
+//User Actions
+
+var ADD_USER = 'ADD_USER';
+var addUser = function(user) {
+    return {
+        type: ADD_USER,
+        user: user
+    }
+};
+
+var REMOVE_USER = 'REMOVE_USER';
+var removeUser = function(user) {
+    return {
+        type: REMOVE_USER,
+        user: user,
+    };
+};
+
+var FETCH_USER_DESC_SUCCESS = 'FETCH_USER_DESC_SUCCESS';
+var fetchUserDescSuccess = function(user, description) {
+    return {
+        type: FETCH_USER_DESC_SUCCESS,
+        user: user,
+        description: description
+    };
+};
+
+var FETCH_USER_DESC_ERROR= 'FETCH_USER_DESC_ERROR';
+var fetchUserDescError = function(user, error) {
+    return {
+        type: FETCH_USER_DESC_ERROR,
+        user: user,
+        error: error
+    };
+};
+
+var fetchUserDesc = function(user) {
+    return function(dispatch) {
+        var url = 'http://localhost:4000/users' + user;
+        return fetch(url).then(function(response) {
+            if (response.state < 200 || response.status >= 300) {
+                var error = new Error(response.statusText)
+                error.response = response
+                throw error;
+            }
+            return response;
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            var description = data.description;
+            return dispatch(
+                fetchUserDescSuccess(user, description)
+            );
+        })
+        .catch(function(error) {
+            return dispatch(
+                fetchUserDescError(user, error)
+            );
+        });
+    }
+};
+
+//---------end User ACTIONS
+
+
+
 //Recipe exports
 exports.ADD_RECIPE = ADD_RECIPE;
 exports.addRecipe = addRecipe;
@@ -168,3 +236,21 @@ exports.fetchIngredientDescError = fetchIngredientDescError;
 exports.fetchIngredientDesc = fetchIngredientDesc;
 
 //----------end Ingredient exports
+
+//User exports
+exports.ADD_USER = ADD_USER;
+exports.addUser = addUser;
+exports.REMOVE_USER = REMOVE_USER;
+exports.removeUser = removeUser;
+
+exports.FETCH_USER_DESC_SUCCESS = FETCH_USER_DESC_SUCCESS;
+exports.fetchUserDescSuccess = fetchUserDescSuccess;
+exports.FETCH_USER_DESC_ERROR = FETCH_USER_DESC_ERROR;
+exports.fetchUserDescError = fetchUserDescError;
+
+
+exports.fetchUserDesc = fetchUserDesc;
+
+//----------end User exports
+
+

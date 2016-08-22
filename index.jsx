@@ -3,12 +3,12 @@ var ReactDOM = require('react-dom');
 var Provider = require('react-redux').Provider;
 
 var store = require('./js/store');
-var RecipeList = require('./components/RecipeList');
+var Page = require('./components/Page');
 
 document.addEventListener('DOMContentLoaded', function() {
     ReactDOM.render(
         <Provider store={store}>
-            <RecipeList />
+            <Page />
         </Provider>,
         document.getElementById('app')
     );

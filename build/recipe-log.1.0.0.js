@@ -51,13 +51,13 @@
 	var Provider = __webpack_require__(175).Provider;
 	
 	var store = __webpack_require__(198);
-	var RecipeList = __webpack_require__(205);
+	var Page = __webpack_require__(205);
 	
 	document.addEventListener('DOMContentLoaded', function () {
 	    ReactDOM.render(React.createElement(
 	        Provider,
 	        { store: store },
-	        React.createElement(RecipeList, null)
+	        React.createElement(Page, null)
 	    ), document.getElementById('app'));
 	});
 
@@ -23315,6 +23315,66 @@
 	
 	//---------end Ingredient Actions
 	
+	//User Actions
+	
+	var ADD_USER = 'ADD_USER';
+	var addUser = function addUser(user) {
+	    return {
+	        type: ADD_USER,
+	        user: user
+	    };
+	};
+	
+	var REMOVE_USER = 'REMOVE_USER';
+	var removeUser = function removeUser(user) {
+	    return {
+	        type: REMOVE_USER,
+	        user: user
+	    };
+	};
+	
+	var FETCH_USER_DESC_SUCCESS = 'FETCH_USER_DESC_SUCCESS';
+	var fetchUserDescSuccess = function fetchUserDescSuccess(user, description) {
+	    return {
+	        type: FETCH_USER_DESC_SUCCESS,
+	        user: user,
+	        description: description
+	    };
+	};
+	
+	var FETCH_USER_DESC_ERROR = 'FETCH_USER_DESC_ERROR';
+	var fetchUserDescError = function fetchUserDescError(user, error) {
+	    return {
+	        type: FETCH_USER_DESC_ERROR,
+	        user: user,
+	        error: error
+	    };
+	};
+	
+	var fetchUserDesc = function fetchUserDesc(user) {
+	    return function (dispatch) {
+	        var url = 'http://localhost:4000/users' + user;
+	        return fetch(url).then(function (response) {
+	            if (response.state < 200 || response.status >= 300) {
+	                var error = new Error(response.statusText);
+	                error.response = response;
+	                throw error;
+	            }
+	            return response;
+	        }).then(function (response) {
+	            return response.json();
+	        }).then(function (data) {
+	            var description = data.description;
+	            return dispatch(fetchUserDescSuccess(user, description));
+	        }).catch(function (error) {
+	            return dispatch(fetchUserDescError(user, error));
+	        });
+	    };
+	};
+	
+	//---------end User ACTIONS
+	
+	
 	//Recipe exports
 	exports.ADD_RECIPE = ADD_RECIPE;
 	exports.addRecipe = addRecipe;
@@ -23344,6 +23404,21 @@
 	exports.fetchIngredientDesc = fetchIngredientDesc;
 	
 	//----------end Ingredient exports
+	
+	//User exports
+	exports.ADD_USER = ADD_USER;
+	exports.addUser = addUser;
+	exports.REMOVE_USER = REMOVE_USER;
+	exports.removeUser = removeUser;
+	
+	exports.FETCH_USER_DESC_SUCCESS = FETCH_USER_DESC_SUCCESS;
+	exports.fetchUserDescSuccess = fetchUserDescSuccess;
+	exports.FETCH_USER_DESC_ERROR = FETCH_USER_DESC_ERROR;
+	exports.fetchUserDescError = fetchUserDescError;
+	
+	exports.fetchUserDesc = fetchUserDesc;
+	
+	//----------end User exports
 
 /***/ },
 /* 203 */
@@ -23879,25 +23954,37 @@
 	var React = __webpack_require__(1);
 	var connect = __webpack_require__(175).connect;
 	
-	var Recipe = __webpack_require__(206);
 	var actions = __webpack_require__(202);
 	
-	var RecipeList = React.createClass({
-	    displayName: 'RecipeList',
+	var BackToTopBtn = __webpack_require__(206);
+	var ContentWrap = __webpack_require__(207);
+	var SideMenuList = __webpack_require__(212);
 	
-	    addRecipe: function addRecipe() {
-	        var recipeName = this.refs.recipeName.value;
-	        this.props.dispatch(actions.addRecipe(recipeName));
-	    }
+	var Page = React.createClass({
+	  displayName: 'Page',
+	
+	  render: function render(props) {
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement('input', { type: 'checkbox', id: 'sideToggle1', hidden: true }),
+	      React.createElement('input', { type: 'checkbox', id: 'sideToggle2', hidden: true }),
+	      this.props.sideMenuLists.map(function (item) {
+	        return React.createElement(SideMenuList, { item: item });
+	      }),
+	      React.createElement(ContentWrap, null),
+	      React.createElement(BackToTopBtn, null)
+	    );
+	  }
 	});
 	
 	var mapStateToProps = function mapStateToProps(state, props) {
-	    return {
-	        recipes: state
-	    };
+	  return {
+	    sideMenuLists: state.sideMenuLists
+	  };
 	};
 	
-	var Container = connect(mapStateToProps)(RecipeList);
+	var Container = connect(mapStateToProps)(Page);
 	
 	module.exports = Container;
 
@@ -23910,36 +23997,22 @@
 	var React = __webpack_require__(1);
 	var connect = __webpack_require__(175).connect;
 	
-	var StarRater = __webpack_require__(207);
-	
-	//to-do: var IngredientList = require('./Ingredient-List');
-	
 	var actions = __webpack_require__(202);
 	
-	var Recipe = React.createClass({
-	    displayName: 'Recipe',
+	var BackToTopBtn = React.createClass({
+	  displayName: 'BackToTopBtn',
 	
-	    componentDidMount: function componentDidMount() {
-	        this.props.dispatch(actions.fetchDescription(this.props.recipe.name));
-	    },
-	    changeRating: function changeRating(rating) {
-	        this.props.dispatch(actions.rateRecipe(this.props.recipe.name, rating));
-	    },
-	    render: function render() {
-	        return React.createElement(
-	            'div',
-	            { className: 'recipe' },
-	            this.props.recipe.name,
-	            ' - ',
-	            this.props.recipe.description,
-	            ' ',
-	            React.createElement(StarRater, { rating: this.props.recipe.rating,
-	                onChange: this.changeRating })
-	        );
-	    }
+	  render: function render() {
+	    console.log('render back to top button');
+	    return React.createElement(
+	      'div',
+	      { className: 'back-to-top', id: 'back-to-top', title: 'Back to top' },
+	      React.createElement('i', { className: 'fa fa-chevron-up' })
+	    );
+	  }
 	});
 	
-	var Container = connect()(Recipe);
+	var Container = connect()(BackToTopBtn);
 	
 	module.exports = Container;
 
@@ -23950,33 +24023,332 @@
 	'use strict';
 	
 	var React = __webpack_require__(1);
+	var connect = __webpack_require__(175).connect;
 	
-	var StarRater = React.createClass({
-	    displayName: 'StarRater',
+	var actions = __webpack_require__(202);
 	
-	    render: function render() {
-	        var stars = [];
-	        for (var i = 0; i < 5; i++) {
-	            var className;
-	            if (i < this.props.rating || 0) {
-	                className = 'fa fa-star';
-	            } else {
-	                className = 'fa fa-star-o';
-	            }
-	            var star = React.createElement('i', { className: className, key: i,
-	                onClick: this.props.onChange.bind(null, i + 1) });
-	            stars.push(star);
-	        }
+	var SiteHeader = __webpack_require__(208);
+	var SideMenuBtnList = __webpack_require__(209);
+	var Dashboard = __webpack_require__(211);
 	
+	var ContentWrap = React.createClass({
+	  displayName: 'ContentWrap',
+	
+	  render: function render(props) {
+	    return React.createElement(
+	      'div',
+	      { id: 'contentWrap' },
+	      React.createElement(SiteHeader, { header: this.props.header }),
+	      React.createElement(SideMenuBtnList, { sideMenus: this.props.sideMenus }),
+	      React.createElement(Dashboard, { content: this.props.content })
+	    );
+	  }
+	});
+	
+	var mapStateToProps = function mapStateToProps(state, props) {
+	  return {
+	    header: state.header,
+	    sideMenus: state.sideMenus,
+	    content: state.content
+	  };
+	};
+	
+	var Container = connect(mapStateToProps)(ContentWrap);
+	
+	module.exports = Container;
+
+/***/ },
+/* 208 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	var connect = __webpack_require__(175).connect;
+	
+	var actions = __webpack_require__(202);
+	
+	var SiteHeader = React.createClass({
+	  displayName: 'SiteHeader',
+	
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { id: 'menuwrap' },
+	      React.createElement(
+	        'div',
+	        { id: 'menu' },
+	        React.createElement(
+	          'span',
+	          null,
+	          'recipe log'
+	        )
+	      )
+	    );
+	  }
+	});
+	
+	var Container = connect()(SiteHeader);
+	
+	module.exports = Container;
+
+/***/ },
+/* 209 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	var connect = __webpack_require__(175).connect;
+	
+	var actions = __webpack_require__(202);
+	
+	var SideMenuBtn = __webpack_require__(210);
+	
+	var SideMenuBtnList = React.createClass({
+	  displayName: 'SideMenuBtnList',
+	
+	  render: function render(props) {
+	    return React.createElement(
+	      'div',
+	      null,
+	      this.props.sideMenus.map(function (sideMenu) {
+	        return React.createElement(SideMenuBtn, { sideMenu: sideMenu });
+	      })
+	    );
+	  }
+	});
+	
+	var mapStateToProps = function mapStateToProps(state, props) {
+	  return {
+	    sideMenus: state.sideMenus
+	  };
+	};
+	
+	var Container = connect(mapStateToProps)(SideMenuBtnList);
+	
+	module.exports = Container;
+
+/***/ },
+/* 210 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	var connect = __webpack_require__(175).connect;
+	
+	var actions = __webpack_require__(202);
+	
+	var SideMenuBtn = React.createClass({
+	    displayName: 'SideMenuBtn',
+	
+	    render: function render(props) {
 	        return React.createElement(
-	            'span',
-	            { className: 'star-rater' },
-	            stars
+	            'label',
+	            { className: this.props.classes, 'for': this.props.sideToggleId },
+	            this.props.name
 	        );
 	    }
 	});
 	
-	module.exports = StarRater;
+	var mapStateToProps = function mapStateToProps(state, props) {
+	    return {
+	        classes: state.classes,
+	        sideToggleId: state.sideToggleId,
+	        name: state.name
+	
+	    };
+	};
+	
+	var Container = connect(mapStateToProps)(SideMenuBtn);
+	
+	module.exports = Container;
+
+/***/ },
+/* 211 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	var connect = __webpack_require__(175).connect;
+	
+	var actions = __webpack_require__(202);
+	
+	var RootBoxesList = __webpack_require__(214);
+	
+	var Dashboard = React.createClass({
+	  displayName: 'Dashboard',
+	
+	  render: function render(props) {
+	    return React.createElement(
+	      'div',
+	      { id: 'content' },
+	      React.createElement(RootBoxesList, { boxes: this.props.boxes })
+	    );
+	  }
+	});
+	
+	var mapStateToProps = function mapStateToProps(state, props) {
+	  return {
+	    boxes: state.boxes
+	  };
+	};
+	
+	var Container = connect(mapStateToProps)(Dashboard);
+	
+	module.exports = Container;
+
+/***/ },
+/* 212 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	var connect = __webpack_require__(175).connect;
+	
+	var actions = __webpack_require__(202);
+	
+	var SideMenuItem = __webpack_require__(213);
+	
+	var SideMenuList = React.createClass({
+	    displayName: 'SideMenuList',
+	
+	    render: function render(props) {
+	        return React.createElement(
+	            'aside',
+	            { className: this.props.classes },
+	            React.createElement(
+	                'h2',
+	                null,
+	                this.props.name
+	            ),
+	            React.createElement(
+	                'ul',
+	                null,
+	                this.props.items.map(function (item) {
+	                    return React.createElement(SideMenuItem, { item: item });
+	                })
+	            )
+	        );
+	    }
+	});
+	
+	var mapStateToProps = function mapStateToProps(state, props) {
+	    return {
+	        classes: state.classes,
+	        name: state.name,
+	        items: state.items
+	    };
+	};
+	
+	var Container = connect(mapStateToProps)(SideMenuList);
+	
+	module.exports = Container;
+
+/***/ },
+/* 213 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	var connect = __webpack_require__(175).connect;
+	
+	var actions = __webpack_require__(202);
+	
+	var SideMenuItem = React.createClass({
+	  displayName: 'SideMenuItem',
+	
+	  render: function render(props) {
+	    return React.createElement(
+	      'li',
+	      null,
+	      React.createElement(
+	        'a',
+	        { href: this.props.link, 'data-value': this.props.dataValue },
+	        this.props.title
+	      )
+	    );
+	  }
+	});
+	
+	var Container = connect()(SideMenuItem);
+	
+	module.exports = Container;
+
+/***/ },
+/* 214 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	var connect = __webpack_require__(175).connect;
+	
+	var actions = __webpack_require__(202);
+	
+	var RootBox = __webpack_require__(215);
+	
+	var RootBoxesList = React.createClass({
+	  displayName: 'RootBoxesList',
+	
+	  render: function render(props) {
+	    return React.createElement(
+	      'div',
+	      { id: 'options-wrapper', className: 'cf' },
+	      this.props.boxes.map(function (box, index) {
+	        return React.createElement(RootBox, { key: index, box: box });
+	      })
+	    );
+	  }
+	});
+	
+	var mapStateToProps = function mapStateToProps(state, props) {
+	  return {
+	    boxes: state.boxes
+	  };
+	};
+	
+	var Container = connect(mapStateToProps)(RootBoxesList);
+	
+	module.exports = Container;
+
+/***/ },
+/* 215 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	var connect = __webpack_require__(175).connect;
+	
+	var actions = __webpack_require__(202);
+	
+	var RootBox = React.createClass({
+	  displayName: 'RootBox',
+	
+	  render: function render(props) {
+	    return React.createElement(
+	      'div',
+	      { className: 'boxi', id: this.props.boxId },
+	      this.props.content
+	    );
+	  }
+	});
+	
+	var mapStateToProps = function mapStateToProps(state, props) {
+	  return {
+	    boxId: state.boxId,
+	    content: state.content
+	  };
+	};
+	
+	var Container = connect(mapStateToProps)(RootBox);
+	
+	module.exports = Container;
 
 /***/ }
 /******/ ]);

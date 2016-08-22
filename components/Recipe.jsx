@@ -1,7 +1,7 @@
 var React = require('react');
 var connect = require('react-redux').connect;
 
-var StarRater = require('./star-rater');
+var StarRater = require('./StarRater');
 
 //to-do: var IngredientList = require('./Ingredient-List');
 

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dash - RL</title>
+  <link rel="stylesheet" href="./style/font-awesome-4.6.3/css/font-awesome.css">
+  <link rel="stylesheet" href="./build/main.css">
+
+</head>
+<body>
+<!-- - - - - - - - - - Side Menu set up -->
+    <input type='checkbox' id='sideToggle1' hidden>
+    <input type='checkbox' id='sideToggle2' hidden>
+    <aside class='sideMenu left'>
+      <h2>Recipe Stuff</h2>
+      <ul>
+        <li><a href='#' data-value='addRecipe'>Add Recipe</a></li>
+        <li><a href='#' data-value='addIngredient'>Add Ingredient</a></li>
+        <li><a href='#' data-value='editRecipe'>Edit Recipe</a></li>
+        <li><a href='#' data-value='editIngredient'>Edit Ingredient</a></li>
+      </ul>
+    </aside>
+    <aside class='sideMenu right'>
+      <h2>User Stuff</h2>
+      <ul>
+        <li><a href='#' data-value='profile'>Profile</a></li>
+        <li><a href='#' data-value='userRecipes'>My Recipes</a></li>
+        <li><a href='#' data-value='userIngredients'>My Ingredients</a></li>
+        <li><a href='#' data-value='other'>Other</a></li>
+      </ul>
+    </aside>
+<!-- - - - - - - - - - - end Side Menu set up -->
+
+
+    <div id='contentWrap'> 
+      <div id="menuwrap">
+          <div id="menu"><span>recipe log</span></div>
+      </div>
+      <div>
+        <label class='menuBtn linesBtn' for='sideToggle2'>&minus;</label>
+        <label class='menuBtn plusBtn' for='sideToggle1'>&plus;</label>
+      </div>
+
+      <div id="pageContent">
+        <div id="header">
+          <h1>Dashboard</h1>
+        </div>
+        
+        <div id="content">
+            <div id="main">
+              <h3>Recent Changes</h3>
+              <div id="box"></div>
+              <div id="box2"></div>
+              <div id="box3"></div>
+              <div id="box"></div>
+              <div id="box2"></div>
+              <div id="box3"></div>
+              <div id="box"></div>
+            </div>
+            <div id="side">
+              <div id="sticky-sidebar">
+                <h2> Profile</h2>
+                <div id="sidecontent2" class="cf"><span>Profile</span></div>
+                <div id="sidecontent2" class="cf"><span>My Ingredients</span></div>
+                <div id="sidecontent3" class="cf"><span>My Recipes</span></div>
+              </div>
+            </div>
+          </div>
+          <div id="footer-wrapper" class="cf">
+            <h2> Your Tags</h2>
+            <div class="boxi">Gluten-Free</div>
+            <div class="boxi">Vegan</div>
+            <div class="boxi">Indian</div>
+            <div class="boxi">Vegetarian</div>
+
+          </div>
+          <div id="credit"><span>Layout by. Arlina Design Powered by. Codepen</span></div>
+      </div>
+</div>
+<div class='back-to-top' id='back-to-top' title='Back to top'><i class='fa fa-chevron-up'></i></div>
+<script type="text/javascript" src="../js/root.js"></script>
+</body>
+</html>
